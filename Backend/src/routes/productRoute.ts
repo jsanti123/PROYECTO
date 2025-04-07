@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { ProductController } from "../controllers/productController";
-import { validations, validationProduct } from "../utils/validators/productValidator";
+import { validationsProduct} from "../utils/validators/productValidator";
+import { validateResult } from "../utils/share/validationUtil";
 
 const productRouter = Router();
 
-productRouter.post("/product", validations, validationProduct, ProductController.createProduct);
-productRouter.get("/product/:id", ProductController.getProduct);
-productRouter.get("/products", ProductController.getAllProducts);
-productRouter.put("/product/:id", ProductController.updateProduct);
-productRouter.delete("/product/:id", ProductController.deleteProduct);
+productRouter.post("/create", validationsProduct, validateResult, ProductController.createProduct);
+productRouter.get("/:id", validateResult,ProductController.getProductById);
+productRouter.get("/list", ProductController.getAllProducts);
+productRouter.put("/edit/:id", ProductController.updateProduct);
+productRouter.delete("/delete/:id", ProductController.deleteProduct);
 
 export default productRouter;

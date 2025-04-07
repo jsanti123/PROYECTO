@@ -1,10 +1,14 @@
 import express from 'express';
 import routerProduct from './routes/productRoute';
+import routerCategory from './routes/categoryRoute';
 
 const app = express();
-app.use(express.json()); //middleware to parse JSON bodies
+const apiRouter= express.Router();
+app.use(express.json());
 
+apiRouter.use('/categories', routerCategory);
+apiRouter.use('/products', routerProduct);
 
-app.use('/api/v1', routerProduct); //mount the product routes on /api
+app.use('/api/v1', apiRouter);
 
 export default app; 

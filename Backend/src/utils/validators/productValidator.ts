@@ -1,8 +1,5 @@
-import { Schema, checkSchema, validationResult } from 'express-validator';
-import { Request, Response, NextFunction } from 'express';
-import ResponseModel from '../share/responseModel';
+import { Schema, checkSchema} from 'express-validator';
 
-// Definir el esquema de validación
 const productSchema: Schema = {
     name: {
         in: ['body'],
@@ -155,14 +152,4 @@ const productSchema: Schema = {
     }
 };
 
-export const validationProduct = (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        res.status(400).json(ResponseModel.errorResponse("Validation Error", errors.array() , 400, "VALIDATION_ERROR"));
-        return;
-    }
-    next();
-}   
-
-// Middleware de validación usando `checkSchema`
-export const validations = checkSchema(productSchema);
+export const validationsProduct = checkSchema(productSchema);
