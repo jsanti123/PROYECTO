@@ -18,7 +18,7 @@ class ResponseModel {
             statusCode,
         };
     }
-    public static errorResponse(message: string, errors: any, statusCode?: number, errorCode?: string): ResponseInterface {
+    public static errorResponse(message: string, errors?: any, statusCode?: number, errorCode?: string): ResponseInterface {
         return {
             success: false,
             message,

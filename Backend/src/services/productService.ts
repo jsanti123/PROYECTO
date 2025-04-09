@@ -1,6 +1,8 @@
+import ResponseModel from '../utils/share/responseUtil';
+import { RESPONSE_CODES } from '../utils/share/responseCodes';
 import { Product } from '../models/Product';
 import { Prisma } from '@prisma/client';
-import ResponseModel from '../utils/share/responseUtil';
+import { StatusCodes } from "http-status-codes";
 import { Response, Request } from 'express';
 
 export class ProductService {
@@ -23,16 +25,16 @@ export class ProductService {
                     return ResponseModel.errorResponse(
                         error.message,
                         null,
-                        404,
-                        "NOT_FOUND"
+                        StatusCodes.NOT_FOUND,
+                        RESPONSE_CODES.NOT_FOUND,
                     );
                 }
             }
             return ResponseModel.errorResponse(
                 "Error creating product",
                 null,
-                500,
-                "INTERNAL_SERVER_ERROR"
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             );
         }
     }
@@ -44,8 +46,8 @@ export class ProductService {
                 return ResponseModel.errorResponse(
                     "Product not found",
                     null,
-                    404,
-                    "NOT_FOUND"
+                    StatusCodes.NOT_FOUND,
+                    RESPONSE_CODES.NOT_FOUND,
                 );
             }
             return ResponseModel.successResponse(
@@ -56,8 +58,8 @@ export class ProductService {
             return ResponseModel.errorResponse(
                 "Error retrieving product",
                 null,
-                500,
-                "INTERNAL_SERVER_ERROR"
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             );
         } 
     }
@@ -68,8 +70,8 @@ export class ProductService {
                 return ResponseModel.errorResponse(
                     "No products found",
                     null,
-                    404,
-                    "NOT_FOUND"
+                    StatusCodes.NOT_FOUND,
+                    RESPONSE_CODES.NOT_FOUND,
                 );
             }
             return ResponseModel.successResponse(
@@ -80,8 +82,8 @@ export class ProductService {
             return ResponseModel.errorResponse(
                 "Error retrieving products",
                 null,
-                500,
-                "INTERNAL_SERVER_ERROR"
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             );
         }
     }
