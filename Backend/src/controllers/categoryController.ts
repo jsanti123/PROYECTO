@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ResponseModel from "../utils/share/responseModel";
+import ResponseModel from "../utils/share/responseUtil";
 import { CategoryService } from "../services/categoryService";
 import { createIdUtil } from "../utils/share/createIdUtil";
 

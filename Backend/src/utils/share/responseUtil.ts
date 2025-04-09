@@ -1,3 +1,5 @@
+import { StatusCodes } from "http-status-codes";
+
 export interface ResponseInterface {
     success: boolean;
     message: string;
@@ -8,7 +10,7 @@ export interface ResponseInterface {
 }
 
 class ResponseModel {
-    public static successResponse(message: string, data: any, statusCode: number = 200): ResponseInterface {
+    public static successResponse(message: string, data: any, statusCode: number = StatusCodes.OK): ResponseInterface {
         return {
             success: true,
             message,

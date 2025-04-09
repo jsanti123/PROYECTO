@@ -1,155 +1,127 @@
-import { Schema, checkSchema} from 'express-validator';
+import { Schema, checkSchema, Location} from 'express-validator';
+const nameField = {
+    in: ['body'] as Location[],
+    exists: { errorMessage: 'El campo es requerido', bail: true },
+    notEmpty: { errorMessage: 'El campo no puede estar vacío', bail: true },
+    isString: { errorMessage: 'El campo debe ser una cadena de texto', bail: true },
+    isLength: {
+      options: { min: 3, max: 255 },
+      errorMessage: 'El campo debe tener entre 3 y 255 caracteres',
+      bail: true,
+    },
+    trim: true,
+    escape: true,
+    matches: {
+      options: /^[A-Za-zÁ-ÿ0-9\s\-.,()]+$/u,
+      errorMessage: 'El campo solo puede contener letras, números y algunos caracteres especiales como -.,()',
+      bail: true,
+    },
+};
+  
+const idField = (prefix: string) => ({
+    in: ['body'] as Location[],
+    exists: { errorMessage: 'El campo es requerido', bail: true },
+    notEmpty: { errorMessage: 'El campo no puede estar vacío', bail: true },
+    isString: { errorMessage: 'El campo debe ser una cadena de texto', bail: true },
+    matches: {
+      options: new RegExp(`^${prefix}\\d{4}$`),
+      errorMessage: `El campo debe seguir el formato ${prefix}XXXX`,
+      bail: true,
+    },
+    trim: true,
+    escape: true,
+});
+  
+const priceField = {
+    in: ['body'] as Location[],
+    exists: { errorMessage: 'El campo es requerido', bail: true },
+    notEmpty: { errorMessage: 'El campo no puede estar vacío', bail: true },
+    custom: {
+      options: (value: any) => {
+        if (typeof value !== 'number') throw new Error('El valor debe ser de tipo número');
+        if (value <= 0) throw new Error('El valor debe ser mayor que cero');
+        if (!/^\d{1,8}(\.\d{1,2})?$/.test(value.toString())) {
+          throw new Error('El valor debe tener máximo 8 dígitos enteros y hasta 2 decimales');
+        }
+        return true;
+      },
+    },
+};
+  
+const stockField = {
+    in: ['body'] as Location[],
+    exists: { errorMessage: 'El campo es requerido', bail: true },
+    notEmpty: { errorMessage: 'El campo no puede estar vacío', bail: true },
+    custom: {
+      options: (value: any) => {
+        if (typeof value !== 'number') throw new Error('El campo debe ser de tipo número');
+        if (value < 0) throw new Error('El valor debe ser mayor o igual a cero');
+        if (value > 2147483647) throw new Error('El valor no puede ser mayor a 2147483647');
+        return true;
+      },
+      bail: true,
+    },
+    isInt: {
+      options: { gt: 0 },
+      errorMessage: 'El valor debe ser un número entero',
+      bail: true,
+    },
+};
+  
+const descriptionField = {
+    in: ['body'] as Location[],
+    optional: true,
+    custom: {
+      options: (value: any) => typeof value === 'string' || value === null,
+      errorMessage: 'El campo debe ser una cadena de texto o nulo',
+      bail: true,
+    },
+    isLength: {
+      options: { min: 0, max: 255 },
+      errorMessage: 'El campo debe tener entre 0 y 255 caracteres',
+      bail: true,
+    },
+    trim: true,
+    escape: true,
+};
 
-const productSchema: Schema = {
-    name: {
-        in: ['body'],
+const productCreateSchema: Schema = {
+    name: nameField,
+    description: descriptionField,
+    category_id: idField('C'),
+    supplier_id: idField('P'),
+    price: priceField,
+    stock: stockField,
+    warehouse_id: idField('A'),
+};
+
+const validationsSearchSchema: Schema = {
+    id: {
+        in: ['params'],
         exists: {
             errorMessage: 'El campo es requerido',
             bail: true,
         },
         notEmpty: {
             errorMessage: 'El campo no puede estar vacío',
-            bail: true,
-        },
-        isString: {
-            errorMessage: 'El campo debe ser una cadena de texto',
-            bail: true,
-        },
-        isLength: {
-            options: { min: 3, max: 255 },
-            errorMessage: 'El campo debe tener entre 3 y 255 caracteres',
-            bail: true,
-        },
-        trim: true,
-        escape: true,
-        matches: {
-            options: /^[A-Za-zÁ-ÿ0-9\s\-.,()]+$/u,
-            errorMessage: 'El campo solo puede contener letras, números y algunos caracteres especiales como -.,()',
-            bail: true,
-        },
-    },
-    description: {
-        in: ['body'],
-        optional: true,
-        custom: {
-            options: (value) => {
-                return typeof value === 'string' || value === null;
-            },
-            errorMessage: 'El campo debe ser una cadena de texto o nulo',
-            bail: true,
-        },
-        isLength: {
-            options: { min: 0, max: 255 },
-            errorMessage: 'El campo debe tener entre 0 y 255 caracteres',
-            bail: true,
-        },
-        trim: true,
-        escape: true,
-    },
-    category_id: {
-        in: ['body'],
-        exists: {
-            errorMessage: 'El campoes requerido',
-            bail: true,
-        },
-        notEmpty: {
-            errorMessage: 'El campo no puede estar vacío',
-            bail: true,
-        },
-        isString: {
-            errorMessage: 'El campo debe ser una cadena de texto',
-            bail: true,
-        },
-        matches: {
-            options: /^C\d{4}$/,
-            errorMessage: 'El campo debe seguir el formato CXXXX',
-            bail: true,
-        },
-        trim: true,
-        escape: true, 
-    },
-    supplier_id: {
-        in: ['body'],
-        exists: {
-            errorMessage: 'El campo es requerido',
-            bail: true,
-        },
-        notEmpty: {
-            errorMessage: 'El campo no puede estar vacío',
-            bail: true,
-        },
-        isString: {
-            errorMessage: 'El campo debe ser una cadena de texto',
             bail: true,
         },
         matches: {
             options: /^P\d{4}$/,
             errorMessage: 'El campo debe seguir el formato PXXXX',
             bail: true,
-        },
-        trim: true,
-        escape: true, 
-    },
-    price: {
-        in: ['body'],
-        exists: {
-            errorMessage: 'El campo es requerido',
-            bail: true,
-        },
-        notEmpty: {
-            errorMessage: 'El campo no puede estar vacío',
-            bail: true,
-        },
-        custom: {
-            options: (value) => {
-                if (typeof value !== 'number') {
-                    throw new Error('El valor debe ser de tipo número');
-                }
-                if (value <= 0) {
-                    throw new Error('El valor debe ser mayor que cero');
-                }
-                const priceRegex = /^\d{1,8}(\.\d{1,2})?$/;
-                const valueStr = value.toString();
-
-                if (!priceRegex.test(valueStr)) {
-                    throw new Error('El valor debe tener máximo 8 dígitos enteros y hasta 2 decimales');
-                }
-                return true;
-            }
-        },
-    },
-    stock: {
-        in: ['body'],
-        exists: {
-            errorMessage: 'El campo es requerido',
-            bail: true,
-        },
-        notEmpty: {
-            errorMessage: 'El campo no puede estar vacío',
-            bail: true,
-        },
-        custom: {
-            options: (value) => {
-                if (typeof value !== 'number') {
-                    throw new Error('El campo debe ser de tipo número');
-                }
-                if (value < 0) {
-                    throw new Error('El valor debe ser mayor o igual a cero');
-                }
-                const MAX_INT = 2147483647; // Valor máximo para un entero de 32 bits
-                if (value > MAX_INT) {
-                    throw new Error(`El valor no puede ser mayor a ${MAX_INT}`);
-                }
-                return true;
-            },
-            bail: true,
-        },
-        isInt: {
-            options: { gt: 0 },
-            errorMessage: 'El valor debe ser un número entero',
-            bail: true,
-        },
+        }
     }
-};
+}
 
-export const validationsProduct = checkSchema(productSchema);
+const validationsUpdateSchema: Schema = {
+    name: nameField,
+    description: descriptionField,
+    price: priceField,
+    category_id: idField('C'),
+    supplier_id: idField('P'),
+}
+
+export const validationsCreateProduct = checkSchema(productCreateSchema);
+export const validationsSearchProduct = checkSchema(validationsSearchSchema);
+export const validationsUpdateProduct = checkSchema(validationsUpdateSchema);

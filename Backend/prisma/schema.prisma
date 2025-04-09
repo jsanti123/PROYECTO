@@ -29,6 +29,7 @@ model Product {
   supplier            Supplier @relation(fields: [supplier_id], references: [id])
   inventoryMovements  InventoryMovements[]
   stockHistory        StockHistory[]
+  stockByWarehouse    StockByWarehouse[]
 }
 
 model Category {
@@ -62,6 +63,7 @@ model Warehouse {
 
   inventoryMovements  InventoryMovements[]
   stockHistory        StockHistory[]
+  stockByWarehouse    StockByWarehouse[]
 }
 
 model InventoryMovements {
@@ -87,6 +89,19 @@ model StockHistory {
 
   product         Product   @relation(fields: [product_id], references: [id])
   warehouse       Warehouse @relation(fields: [warehouse_id], references: [id])
+}
+
+model StockByWarehouse {
+  product_id  String
+  warehouse_id String
+  stock       Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  product     Product   @relation(fields: [product_id], references: [id])
+  warehouse   Warehouse @relation(fields: [warehouse_id], references: [id])
+
+  @@id ([product_id, warehouse_id])
 }
 
 enum MovementType {

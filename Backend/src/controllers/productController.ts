@@ -1,22 +1,19 @@
 import { Request, Response } from 'express';
-import ResponseModel from '../utils/share/responseModel';
 import { ProductService } from '../services/productService';
-import { createIdUtil } from '../utils/share/createIdUtil';
 
 export class ProductController {
     public static async createProduct(req: Request, res: Response) {  
-        try {
-            const product_id = await createIdUtil('product');
-            req.body.id = product_id;
-            await ProductService.create(req.body);
-            res.status(200).json(ResponseModel.successResponse("Product created successfully", req.body));
-        } catch (error) {
-            res.status(500).json(ResponseModel.errorResponse("Error creating product", null, 500, "INTERNAL_SERVER_ERROR"));
-        }
+        const response = await ProductService.create(req, res, req.body);
+        res.status(response.statusCode || 500).json(response);
     }
-    public static getProductById(req: Request, res: Response) {
+    public static async getProductById(req: Request, res: Response) {
+        const product_id = req.params.id;
+        const response = await ProductService.getById(product_id);
+        res.status(response.statusCode || 500).json(response);
     }
-    public static getAllProducts(req: Request, res: Response) {
+    public static async getAllProducts(req: Request, res: Response) {
+        const response = await ProductService.getAll();
+        res.status(response.statusCode || 500).json(response);
     }
     public static updateProduct(req: Request, res: Response) {
     }
