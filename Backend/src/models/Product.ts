@@ -37,6 +37,28 @@ export class Product {
     public static async getAllProducts() {
         return await db.product.findMany();
     }
+    public static async updateProduct(id: string, productData: any) {
+        return await db.$transaction(async (tx) => {
+            const updateData: any = {
+                name: productData.name,
+                price: productData.price,
+                stock: productData.stock,
+                category_id: productData.category_id,
+                supplier_id: productData.supplier_id
+            };
+    
+            if (productData.description !== null) {
+                updateData.description = productData.description;
+            }
+    
+            const updatedProduct = await tx.product.update({
+                where: { id },
+                data: updateData
+            });
+    
+            return updatedProduct;
+        });
+    }
 }
 
 

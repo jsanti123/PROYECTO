@@ -3,17 +3,16 @@ import { RESPONSE_CODES } from '../utils/share/responseCodes';
 import { Product } from '../models/Product';
 import { Prisma } from '@prisma/client';
 import { StatusCodes } from "http-status-codes";
-import { Response, Request } from 'express';
 
 export class ProductService {
-    public static async create(req: Request, res: Response, data: Prisma.ProductCreateInput) {
+    public static async create(data: Prisma.ProductCreateInput) {
         try {
             if (!data.description) data.description = null;
             const product = await Product.createProduct(data);
             return ResponseModel.successResponse(
                 "Product created successfully",
                 product,
-              );
+            );
         } catch (error) {
             if(error instanceof Error) {
                 const notFoundMessages = [
@@ -24,16 +23,16 @@ export class ProductService {
                 if (notFoundMessages.includes(error.message)) {
                     return ResponseModel.errorResponse(
                         error.message,
-                        null,
                         StatusCodes.NOT_FOUND,
+                        null,
                         RESPONSE_CODES.NOT_FOUND,
                     );
                 }
             }
             return ResponseModel.errorResponse(
                 "Error creating product",
-                null,
                 StatusCodes.INTERNAL_SERVER_ERROR,
+                null,
                 RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             );
         }
@@ -45,8 +44,8 @@ export class ProductService {
             if (!product) {
                 return ResponseModel.errorResponse(
                     "Product not found",
-                    null,
                     StatusCodes.NOT_FOUND,
+                    null,
                     RESPONSE_CODES.NOT_FOUND,
                 );
             }
@@ -57,8 +56,8 @@ export class ProductService {
         } catch (error) {
             return ResponseModel.errorResponse(
                 "Error retrieving product",
-                null,
                 StatusCodes.INTERNAL_SERVER_ERROR,
+                null,
                 RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             );
         } 
@@ -69,8 +68,8 @@ export class ProductService {
             if (!products || products.length === 0) {
                 return ResponseModel.errorResponse(
                     "No products found",
-                    null,
                     StatusCodes.NOT_FOUND,
+                    null,
                     RESPONSE_CODES.NOT_FOUND,
                 );
             }
@@ -81,8 +80,34 @@ export class ProductService {
         } catch (error) {
             return ResponseModel.errorResponse(
                 "Error retrieving products",
-                null,
                 StatusCodes.INTERNAL_SERVER_ERROR,
+                null,
+                RESPONSE_CODES.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
+    public static async update(id: string, data: Prisma.ProductUpdateInput) {
+        try {
+            const product = await Product.getProductById(id);
+            if (!product) {
+                return ResponseModel.errorResponse(
+                    "Product not found",
+                    StatusCodes.NOT_FOUND,
+                    null,
+                    RESPONSE_CODES.NOT_FOUND,
+                );
+            }
+            if(!data.description) data.description = null;
+            const updatedProduct = await Product.updateProduct(id, data);
+            return ResponseModel.successResponse(
+                "Product updated successfully",
+                updatedProduct,
+            );
+        } catch  {
+            return ResponseModel.errorResponse(
+                "Error updating product",
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                null,
                 RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             );
         }

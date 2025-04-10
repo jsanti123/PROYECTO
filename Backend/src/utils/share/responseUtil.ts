@@ -5,7 +5,7 @@ export interface ResponseInterface {
     message: string;
     data?: any;
     errors?: any;
-    statusCode?: number;
+    statusCode: number;
     errorCode?: string;
 }
 
@@ -18,7 +18,7 @@ class ResponseModel {
             statusCode,
         };
     }
-    public static errorResponse(message: string, errors?: any, statusCode?: number, errorCode?: string): ResponseInterface {
+    public static errorResponse(message: string, statusCode: number, errors?: any, errorCode?: string): ResponseInterface {
         return {
             success: false,
             message,

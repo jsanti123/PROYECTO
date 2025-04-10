@@ -95,7 +95,7 @@ const productCreateSchema: Schema = {
     warehouse_id: idField('A'),
 };
 
-const validationsSearchSchema: Schema = {
+const validationsIdParams: Schema = {
     id: {
         in: ['params'],
         exists: {
@@ -123,5 +123,5 @@ const validationsUpdateSchema: Schema = {
 }
 
 export const validationsCreateProduct = checkSchema(productCreateSchema);
-export const validationsSearchProduct = checkSchema(validationsSearchSchema);
+export const validationsIdParamsProduct = checkSchema(validationsIdParams);
 export const validationsUpdateProduct = checkSchema(validationsUpdateSchema);

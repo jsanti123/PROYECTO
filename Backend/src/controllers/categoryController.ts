@@ -18,8 +18,8 @@ export class CategoryController {
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ResponseModel.errorResponse(
                 "Error creating category",
-                null,
                 StatusCodes.INTERNAL_SERVER_ERROR,
+                null,
                 RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             ));
         }
