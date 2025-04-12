@@ -19,6 +19,8 @@ export class ProductController {
         const response = await ProductService.update(req.params.id, req.body);
         res.status(response.statusCode).json(response);
     }
-    public static deleteProduct(req: Request, res: Response) {
+    public static async deleteProduct(req: Request, res: Response) {
+        const response = await ProductService.delete(req.params.id);
+        res.status(response.statusCode).json(response);
     }
 }

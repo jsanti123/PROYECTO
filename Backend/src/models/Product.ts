@@ -28,14 +28,42 @@ export class Product {
         });
     }
     public static async getProductById(id: string) {
-        return await db.product.findUnique({
+        const product = await db.product.findUnique({
             where: {
-                id
+                id ,
+                deleted: false
+            },
+            include: {
+                category: true,
+                supplier: true,
+                stockByWarehouse: {
+                    include: {
+                        warehouse: true
+                    }
+                }
             }
         });
+        if (!product) {
+            return null;
+        }
+        return this.formatProduct(product);
     }
     public static async getAllProducts() {
-        return await db.product.findMany();
+        const data = await db.product.findMany({
+            where: {
+                deleted: false
+            },
+            include: {
+                category: true,
+                supplier: true,
+                stockByWarehouse: {
+                    include: {
+                        warehouse: true
+                    }
+                }
+            }
+        });
+        return data.map(this.formatProduct);
     }
     public static async updateProduct(id: string, productData: any) {
         return await db.$transaction(async (tx) => {
@@ -59,6 +87,46 @@ export class Product {
             return updatedProduct;
         });
     }
+    public static async deleteProduct(id: string) {
+        const data = await db.product.update({
+            where: { id },
+            data: {
+                deleted: true
+            },
+            include: {
+                category: true,
+                supplier: true,
+                stockByWarehouse: {
+                    include: {
+                        warehouse: true
+                    }
+                }
+            }
+        });
+        return this.formatProduct(data);
+    }
+    private static formatProduct(product: any) {
+        return {
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            stock: product.stock,
+            category: {
+                id: product.category?.id,
+                name: product.category?.name,
+            },
+            supplier: {
+                id: product.supplier?.id,
+                name: product.supplier?.name,
+            },
+            warehouses: product.stockByWarehouse?.map((sbw: any) => ({
+                name: sbw.warehouse.name,
+                stock: sbw.stock,
+            })) ?? [],
+        };
+    }
+  
 }
 
 

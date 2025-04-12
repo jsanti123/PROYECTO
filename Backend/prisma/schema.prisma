@@ -22,6 +22,7 @@ model Product {
   price       Decimal  @db.Decimal(10, 2)
   image       Bytes?    @db.ByteA
   stock       Int
+  deleted     Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt @default(now())
 
@@ -68,7 +69,7 @@ model Warehouse {
 
 model InventoryMovements {
   id            Int       @id @default(autoincrement())
-  product_id    String 
+  product_id    String    
   warehouse_id  String
   movement_type MovementType
   quantity      Int

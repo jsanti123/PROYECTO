@@ -112,4 +112,28 @@ export class ProductService {
             );
         }
     }
+    public static async delete(id: string) {
+        try {
+            const product = await Product.deleteProduct(id);
+            if (!product) {
+                return ResponseModel.errorResponse(
+                    "Product not found",
+                    StatusCodes.NOT_FOUND,
+                    null,
+                    RESPONSE_CODES.NOT_FOUND,
+                );
+            }
+            return ResponseModel.successResponse(
+                "Product deleted successfully",
+                product,
+            );
+        } catch (error) {
+            return ResponseModel.errorResponse(
+                "Error deleting product",
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                null,
+                RESPONSE_CODES.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 }
