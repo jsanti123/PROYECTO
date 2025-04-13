@@ -26,6 +26,18 @@ export async function createIdUtil(table: string) {
             }
             const paddedCategoryNumber = String(nextCategoryIdNumber).padStart(4, '0');
             return `C${paddedCategoryNumber}`;
+        case 'warehouse':
+            const lastWarehouse = await db.warehouse.findFirst({
+                orderBy: { id: 'desc' },
+                select: { id: true }
+            });
+            let nextWarehouseIdNumber = 1;
+            if (lastWarehouse && lastWarehouse.id) {
+                const numericPart = parseInt(lastWarehouse.id.replace('A', ''), 10);
+                nextWarehouseIdNumber = numericPart + 1;
+            }
+            const paddedWarehouseNumber = String(nextWarehouseIdNumber).padStart(4, '0');
+            return `A${paddedWarehouseNumber}`;
         default:
             throw new Error(`Unknown table: ${table}`);
     }
