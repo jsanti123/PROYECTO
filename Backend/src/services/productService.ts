@@ -88,8 +88,9 @@ export class ProductService {
     }
     public static async update(id: string, data: Prisma.ProductUpdateInput) {
         try {
-            const product = await Product.getProductById(id);
-            if (!product) {
+            if(!data.description) data.description = null;
+            const updatedProduct = await Product.updateProduct(id, data);
+            if (!updatedProduct) {
                 return ResponseModel.errorResponse(
                     "Product not found",
                     StatusCodes.NOT_FOUND,
@@ -97,8 +98,6 @@ export class ProductService {
                     RESPONSE_CODES.NOT_FOUND,
                 );
             }
-            if(!data.description) data.description = null;
-            const updatedProduct = await Product.updateProduct(id, data);
             return ResponseModel.successResponse(
                 "Product updated successfully",
                 updatedProduct,

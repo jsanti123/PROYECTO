@@ -7,8 +7,8 @@ export class ProductController {
         res.status(response.statusCode).json(response);
     }
     public static async getProductById(req: Request, res: Response) {
-        const product_id = req.params.id;
-        const response = await ProductService.getById(product_id);
+        const productId = req.params.id;
+        const response = await ProductService.getById(productId);
         res.status(response.statusCode).json(response);
     }
     public static async getAllProducts(req: Request, res: Response) {

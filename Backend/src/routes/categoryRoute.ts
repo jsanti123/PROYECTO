@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import { validationsCategory } from '../utils/validators/categoryValidator';
+import { validationsCreateCategory, validationsUpdateCategory, validationsCategoryId } from '../utils/validators/categoryValidator';
 import { validateResult } from '../utils/share/validationUtil';
 import { CategoryController } from '../controllers/categoryController';
 
 const categoryRouter = Router();
 
-categoryRouter.post('/create', validationsCategory, validateResult, CategoryController.createCategory);
-categoryRouter.get('/:id', validateResult, CategoryController.getCategoryById);
+categoryRouter.post('/create', validationsCreateCategory, validateResult, CategoryController.createCategory);
 categoryRouter.get('/list', CategoryController.getAllCategories);
-categoryRouter.put('/edit/:id', CategoryController.updateCategory);
-categoryRouter.delete('/delete/:id', CategoryController.deleteCategory);
+categoryRouter.put('/edit/:id', validationsUpdateCategory, validationsCategoryId, validateResult, CategoryController.updateCategory);
+categoryRouter.delete('/delete/:id', validationsCategoryId, validateResult, CategoryController.deleteCategory);
+categoryRouter.get('/:id', validationsCategoryId,validateResult, CategoryController.getCategoryById);
 
 export default categoryRouter;

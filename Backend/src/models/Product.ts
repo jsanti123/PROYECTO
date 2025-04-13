@@ -30,15 +30,35 @@ export class Product {
     public static async getProductById(id: string) {
         const product = await db.product.findUnique({
             where: {
-                id ,
+                id,
                 deleted: false
             },
-            include: {
-                category: true,
-                supplier: true,
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+                category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                supplier: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 stockByWarehouse: {
-                    include: {
-                        warehouse: true
+                    select: {
+                        stock: true,
+                        warehouse: {
+                            select: {
+                                id: true,
+                                name: true
+                            }
+                        }
                     }
                 }
             }
@@ -46,24 +66,45 @@ export class Product {
         if (!product) {
             return null;
         }
-        return this.formatProduct(product);
+        return product;
     }
+    
     public static async getAllProducts() {
-        const data = await db.product.findMany({
+        const products = await db.product.findMany({
             where: {
                 deleted: false
             },
-            include: {
-                category: true,
-                supplier: true,
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+                category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                supplier: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 stockByWarehouse: {
-                    include: {
-                        warehouse: true
+                    select: {
+                        stock: true,
+                        warehouse: {
+                            select: {
+                                id: true,
+                                name: true
+                            }
+                        }
                     }
                 }
             }
         });
-        return data.map(this.formatProduct);
+        return products;
     }
     public static async updateProduct(id: string, productData: any) {
         return await db.$transaction(async (tx) => {
@@ -74,59 +115,58 @@ export class Product {
                 category_id: productData.category_id,
                 supplier_id: productData.supplier_id
             };
-    
             if (productData.description !== null) {
                 updateData.description = productData.description;
             }
-    
             const updatedProduct = await tx.product.update({
                 where: { id },
-                data: updateData
+                data: updateData,
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    stock: true,
+                    description: true,
+                    category: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    supplier: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    }
+                }
             });
-    
             return updatedProduct;
         });
     }
     public static async deleteProduct(id: string) {
-        const data = await db.product.update({
+        const product = await db.product.update({
             where: { id },
             data: {
                 deleted: true
             },
-            include: {
-                category: true,
-                supplier: true,
-                stockByWarehouse: {
-                    include: {
-                        warehouse: true
+            select: {
+                id: true,
+                name: true,
+                supplier: {
+                    select: {
+                        name: true
                     }
-                }
-            }
+                },
+                category: {
+                    select: {
+                        name: true
+                    }
+                },
+            },
         });
-        return this.formatProduct(data);
+        return product;
     }
-    private static formatProduct(product: any) {
-        return {
-            id: product.id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            category: {
-                id: product.category?.id,
-                name: product.category?.name,
-            },
-            supplier: {
-                id: product.supplier?.id,
-                name: product.supplier?.name,
-            },
-            warehouses: product.stockByWarehouse?.map((sbw: any) => ({
-                name: sbw.warehouse.name,
-                stock: sbw.stock,
-            })) ?? [],
-        };
-    }
-  
 }
 
 

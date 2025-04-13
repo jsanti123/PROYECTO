@@ -1,22 +1,5 @@
 import { Schema, checkSchema, Location} from 'express-validator';
-const nameField = {
-    in: ['body'] as Location[],
-    exists: { errorMessage: 'El campo es requerido', bail: true },
-    notEmpty: { errorMessage: 'El campo no puede estar vacío', bail: true },
-    isString: { errorMessage: 'El campo debe ser una cadena de texto', bail: true },
-    isLength: {
-      options: { min: 3, max: 255 },
-      errorMessage: 'El campo debe tener entre 3 y 255 caracteres',
-      bail: true,
-    },
-    trim: true,
-    escape: true,
-    matches: {
-      options: /^[A-Za-zÁ-ÿ0-9\s\-.,()]+$/u,
-      errorMessage: 'El campo solo puede contener letras, números y algunos caracteres especiales como -.,()',
-      bail: true,
-    },
-};
+import { nameField, descriptionField, validationsId } from './generalValidations';
   
 const idField = (prefix: string) => ({
     in: ['body'] as Location[],
@@ -67,23 +50,6 @@ const stockField = {
       bail: true,
     },
 };
-  
-const descriptionField = {
-    in: ['body'] as Location[],
-    optional: true,
-    custom: {
-      options: (value: any) => typeof value === 'string' || value === null,
-      errorMessage: 'El campo debe ser una cadena de texto o nulo',
-      bail: true,
-    },
-    isLength: {
-      options: { min: 0, max: 255 },
-      errorMessage: 'El campo debe tener entre 0 y 255 caracteres',
-      bail: true,
-    },
-    trim: true,
-    escape: true,
-};
 
 const productCreateSchema: Schema = {
     name: nameField,
@@ -95,25 +61,6 @@ const productCreateSchema: Schema = {
     warehouse_id: idField('A'),
 };
 
-const validationsIdParams: Schema = {
-    id: {
-        in: ['params'],
-        exists: {
-            errorMessage: 'El campo es requerido',
-            bail: true,
-        },
-        notEmpty: {
-            errorMessage: 'El campo no puede estar vacío',
-            bail: true,
-        },
-        matches: {
-            options: /^P\d{4}$/,
-            errorMessage: 'El campo debe seguir el formato PXXXX',
-            bail: true,
-        }
-    }
-}
-
 const validationsUpdateSchema: Schema = {
     name: nameField,
     description: descriptionField,
@@ -122,6 +69,10 @@ const validationsUpdateSchema: Schema = {
     supplier_id: idField('P'),
 }
 
+const productValidateIdSchema: Schema = {
+    id: validationsId('P')
+}
+
 export const validationsCreateProduct = checkSchema(productCreateSchema);
-export const validationsIdParamsProduct = checkSchema(validationsIdParams);
 export const validationsUpdateProduct = checkSchema(validationsUpdateSchema);
+export const validationsProductId = checkSchema(productValidateIdSchema);

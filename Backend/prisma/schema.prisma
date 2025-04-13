@@ -37,6 +37,7 @@ model Category {
   id          String    @id
   name        String    @db.VarChar(255)
   description String?   @db.VarChar(255)
+  deleted     Boolean   @default(false)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt @default(now())
 
